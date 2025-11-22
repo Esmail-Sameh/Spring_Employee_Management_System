@@ -1,6 +1,9 @@
 package com.employee.controller;
 
 import com.employee.entities.Employee;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -14,36 +17,49 @@ public class EmployeeController {
     ArrayList<Employee> employees = new ArrayList<>();
 
     @GetMapping
-    public ArrayList<Employee> findAll() {
-        return employees;
+    public ResponseEntity<ArrayList<Employee>> findAll() {
+        if (employees.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<ArrayList<Employee>>(employees, HttpStatus.OK);
     }
 
     @GetMapping("/{employeeId}")
-    public Optional<Employee> findOne(@PathVariable UUID employeeId) {
+    public ResponseEntity<Employee> findOne(@PathVariable UUID employeeId) {
         Optional<Employee> employee = employees.stream().filter(
                 emp -> emp.getId().equals(employeeId)).findFirst();
-        return employee;
+
+        if (employee.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Employee>(employee.get(), HttpStatus.OK);
     }
 
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> createEmployee(@RequestBody @Valid Employee employee) {
         employee.setId(UUID.randomUUID());
         employee.setDepartmentId(UUID.randomUUID());
         employees.add(employee);
-        return employee;
+
+        return new ResponseEntity<Employee>(employee, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{employeeId}")
-    public void deleteEmployee(@PathVariable UUID employeeId) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable UUID employeeId) {
         Optional<Employee> employee = employees.stream().filter(
                 emp -> emp.getId().equals(employeeId)).findFirst();
+        if (employee.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         if (employee.isPresent()) {
             employees.remove(employee.get());
         }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{employeeId}")
-    public Optional<Employee> updateEmployee(@RequestBody Employee employee, @PathVariable UUID employeeId) {
+    public ResponseEntity<Employee> updateEmployee(@RequestBody @Valid Employee employee, @PathVariable UUID employeeId) {
         Optional<Employee> exEmployee = employees.stream().filter(
                 emp -> emp.getId().equals(employeeId)).findFirst();
         if (exEmployee.isPresent()) {
@@ -54,7 +70,7 @@ public class EmployeeController {
             exEmployee.get().setHireingDate(employee.getHireingDate());
             exEmployee.get().setPhone_number(employee.getPhone_number());
         }
-        return exEmployee;
+        return new ResponseEntity<Employee>(exEmployee.get(), HttpStatus.OK);
 
     }
 
