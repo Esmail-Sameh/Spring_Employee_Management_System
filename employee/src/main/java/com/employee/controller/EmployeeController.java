@@ -1,6 +1,8 @@
 package com.employee.controller;
 
 import com.employee.abstracts.EmployeeService;
+import com.employee.dtos.EmployeeCreate;
+import com.employee.dtos.EmployeeUpdate;
 import com.employee.entities.Employee;
 import com.employee.shared.GlobalResponse;
 import jakarta.validation.Valid;
@@ -9,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,8 +22,8 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @GetMapping
-    public ResponseEntity<GlobalResponse<ArrayList<Employee>>> findAllEmployee() {
-        ArrayList<Employee> employees = employeeService.findAllEmployee();
+    public ResponseEntity<GlobalResponse<List<Employee>>> findAllEmployee() {
+        List<Employee> employees = employeeService.findAllEmployee();
         return new ResponseEntity<>(new GlobalResponse<>(employees), HttpStatus.OK);
     }
 
@@ -32,7 +34,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<GlobalResponse<Employee>> createEmployee(@RequestBody @Valid Employee employee) {
+    public ResponseEntity<GlobalResponse<Employee>> createEmployee(@RequestBody @Valid EmployeeCreate employee) {
         Employee newEmployee = employeeService.createEmployee(employee);
         return new ResponseEntity<>(new GlobalResponse<>(newEmployee), HttpStatus.CREATED);
     }
@@ -44,7 +46,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/{employeeId}")
-    public ResponseEntity<GlobalResponse<Employee>> updateEmployee(@RequestBody @Valid Employee employee, @PathVariable UUID employeeId) {
+    public ResponseEntity<GlobalResponse<Employee>> updateEmployee(@RequestBody @Valid EmployeeUpdate employee, @PathVariable UUID employeeId) {
         Employee exEmployee = employeeService.updateEmployee(employee, employeeId);
 
         return new ResponseEntity<>(new GlobalResponse<>(exEmployee), HttpStatus.OK);

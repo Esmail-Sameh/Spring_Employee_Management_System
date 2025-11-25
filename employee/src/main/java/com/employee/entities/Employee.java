@@ -1,46 +1,50 @@
 package com.employee.entities;
 
-import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Entity
+@Table(name = "employee")
 public class Employee {
 
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @UuidGenerator
     private UUID id;
 
-    @NotNull(message = "First name is required")
-    @Size(min = 2, max = 50, message = "min is 2 and max is 50")
+    @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @NotNull(message = "Last name is required")
-    @Size(min = 2, max = 50, message = "min is 2 characters and max is 50 characters")
+    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    @NotNull(message = "email is required")
-    @Email(message = "Invalid Email format")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @NotNull(message = "phone_number is required")
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number")
-    private String phone_number;
+    @Column(name = "phone_number", nullable = false, length = 25)
+    private String phoneNumber;
 
-    @NotNull(message = "hireingDate is required")
-    @PastOrPresent(message = "Hire date cannot be in the future")
+    @Column(name = "hireing_date", nullable = false)
     private LocalDate hireingDate;
 
-    @NotNull(message = "Position is required")
-    @Size(min = 2, max = 50, message = "min is 2 characters and max is 50 characters")
+    @Column(name = "position", nullable = false)
     private String position;
 
-    private UUID departmentId;
+    @Column(name = "department_id", nullable = false)
+    private UUID departmentId = UUID.randomUUID();
+
+    public Employee() {
+    }
 
     public Employee(UUID id, String firstName, String lastName, String email, String phone_number, LocalDate hireingDate, String position, UUID departmentId) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.phone_number = phone_number;
+        this.phoneNumber = phone_number;
         this.hireingDate = hireingDate;
         this.position = position;
         this.departmentId = departmentId;
@@ -79,11 +83,11 @@ public class Employee {
     }
 
     public String getPhone_number() {
-        return phone_number;
+        return phoneNumber;
     }
 
     public void setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
+        this.phoneNumber = phone_number;
     }
 
     public String getPosition() {
@@ -109,6 +113,5 @@ public class Employee {
     public void setHireingDate(LocalDate hireingDate) {
         this.hireingDate = hireingDate;
     }
-
 
 }
