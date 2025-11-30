@@ -3,6 +3,7 @@ package com.employee.dtos;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record EmployeeCreate(
         @NotNull(message = "First name is required")
@@ -27,6 +28,9 @@ public record EmployeeCreate(
 
         @NotNull(message = "Position is required")
         @Size(min = 2, max = 50, message = "min is 2 characters and max is 50 characters")
-        String position
+        String position,
+
+        @NotNull(message = "DepartmentId is required")
+        UUID departmentId
 ) {
 }

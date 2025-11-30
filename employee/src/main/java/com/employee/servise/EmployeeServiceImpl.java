@@ -3,13 +3,14 @@ package com.employee.servise;
 import com.employee.abstracts.EmployeeService;
 import com.employee.dtos.EmployeeCreate;
 import com.employee.dtos.EmployeeUpdate;
+import com.employee.entities.Department;
 import com.employee.entities.Employee;
+import com.employee.repositpories.DepartmentRepo;
 import com.employee.repositpories.EmployeeRepo;
 import com.employee.shared.CustomResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     EmployeeRepo employeeRepo;
-    ArrayList<Employee> employees = new ArrayList<>();
+
+    @Autowired
+    DepartmentRepo departmentRepo;
+
 
     @Override
     public List<Employee> findAllEmployee() {
@@ -36,13 +40,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee createEmployee(EmployeeCreate employeeCreate) {
         Employee employee = new Employee();
+
+        Department department = departmentRepo.findById(employeeCreate.departmentId())
+                .orElseThrow(() -> CustomResponseException.ResourceNotFound(
+                        "Department with id " + employeeCreate.departmentId() + " not found"
+                ));
+
         employee.setEmail(employeeCreate.email());
         employee.setFirstName(employeeCreate.firstName());
         employee.setLastName(employeeCreate.lastName());
         employee.setPosition(employeeCreate.position());
         employee.setHireingDate(employeeCreate.hireingDate());
         employee.setPhone_number(employeeCreate.phone_number());
-
+        employee.setDepartment(department);
         employeeRepo.save(employee);
 
 
@@ -64,6 +74,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> CustomResponseException.ResourceNotFound(
                         "Employee with id " + employeeId + " not found"
                 ));
+
+
         exEmployee.setFirstName(employeeUpdate.firstName());
         exEmployee.setLastName(employeeUpdate.lastName());
         exEmployee.setPosition(employeeUpdate.position());

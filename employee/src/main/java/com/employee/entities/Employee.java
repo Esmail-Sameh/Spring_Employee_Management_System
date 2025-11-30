@@ -1,5 +1,6 @@
 package com.employee.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -33,13 +34,15 @@ public class Employee {
     @Column(name = "position", nullable = false)
     private String position;
 
-    @Column(name = "department_id", nullable = false)
-    private UUID departmentId = UUID.randomUUID();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "department_id", nullable = false)
+    @JsonProperty("departmentId")
+    private Department department;
 
     public Employee() {
     }
 
-    public Employee(UUID id, String firstName, String lastName, String email, String phone_number, LocalDate hireingDate, String position, UUID departmentId) {
+    public Employee(UUID id, String firstName, String lastName, String email, String phone_number, LocalDate hireingDate, String position, Department department) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -47,7 +50,23 @@ public class Employee {
         this.phoneNumber = phone_number;
         this.hireingDate = hireingDate;
         this.position = position;
-        this.departmentId = departmentId;
+        this.department = department;
+    }
+
+    public UUID getDepartment() {
+        return department.getDepartmentId();
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public UUID getId() {
@@ -96,14 +115,6 @@ public class Employee {
 
     public void setPosition(String position) {
         this.position = position;
-    }
-
-    public UUID getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(UUID departmentId) {
-        this.departmentId = departmentId;
     }
 
     public LocalDate getHireingDate() {

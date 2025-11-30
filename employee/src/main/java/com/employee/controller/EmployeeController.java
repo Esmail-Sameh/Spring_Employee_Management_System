@@ -1,9 +1,13 @@
 package com.employee.controller;
 
 import com.employee.abstracts.EmployeeService;
+import com.employee.abstracts.LeaveRequestService;
 import com.employee.dtos.EmployeeCreate;
 import com.employee.dtos.EmployeeUpdate;
+import com.employee.dtos.LeaveRequestCreate;
+import com.employee.dtos.LeaveRequestUpdate;
 import com.employee.entities.Employee;
+import com.employee.entities.LeaveRequest;
 import com.employee.shared.GlobalResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,8 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private LeaveRequestService leaveRequestService;
 
     @GetMapping
     public ResponseEntity<GlobalResponse<List<Employee>>> findAllEmployee() {
@@ -50,8 +56,47 @@ public class EmployeeController {
         Employee exEmployee = employeeService.updateEmployee(employee, employeeId);
 
         return new ResponseEntity<>(new GlobalResponse<>(exEmployee), HttpStatus.OK);
-
     }
 
+    //***** Leave Request *****//
+
+    @PostMapping("/{employeeId}/leave-request")
+    public ResponseEntity<GlobalResponse<LeaveRequest>> createLeaveRequest(
+            @RequestBody @Valid LeaveRequestCreate leaveRequestCreate,
+            @PathVariable UUID employeeId) {
+
+        LeaveRequest leaveRequest = leaveRequestService.createLeaveRequest(leaveRequestCreate, employeeId);
+        return new ResponseEntity<>(new GlobalResponse<>(leaveRequest), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{leaveRequestId}/leave-request")
+    public ResponseEntity<GlobalResponse<LeaveRequest>> updateLeaveRequest(
+            @RequestBody @Valid LeaveRequestUpdate leaveRequestUpdate,
+            @PathVariable UUID leaveRequestId) {
+
+        LeaveRequest leaveRequest = leaveRequestService.updateOneLeaveRequest(leaveRequestId, leaveRequestUpdate);
+        return new ResponseEntity<>(new GlobalResponse<>(leaveRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/{employeeId}/leave-request")
+    public ResponseEntity<GlobalResponse<List<LeaveRequest>>> findAllLeaveRequestBYEmployee(@PathVariable UUID employeeId) {
+        List<LeaveRequest> employeeLeaveRequest = leaveRequestService.findAllLeaveRequestBYEmployee(employeeId);
+        return new ResponseEntity<>(new GlobalResponse<>(employeeLeaveRequest), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{leaveRequestId}/leave-request")
+    public void deleteLeaveRequest(@PathVariable @Valid UUID leaveRequestId) {
+        leaveRequestService.deleteLeaveRequest(leaveRequestId);
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
